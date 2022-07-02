@@ -822,8 +822,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8a5907fd967efc44becd315c57f083b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 4085543440051141002, guid: be9112513f92d3047b6d0ba293c52421, type: 3}
-  asteroidPrefab: {fileID: 3594271048076026820, guid: ccccdaafe59763c49813da1129d45158, type: 3}
+  EnemyPrefab: {fileID: 4085543440051141002, guid: be9112513f92d3047b6d0ba293c52421, type: 3}
+  AsteroidPrefab: {fileID: 3594271048076026820, guid: ccccdaafe59763c49813da1129d45158, type: 3}
   BossPrefab: {fileID: 8813199125343518330, guid: 35cdec452c898454eb420bee4c450217, type: 3}
 --- !u!1 &731003041
 GameObject:

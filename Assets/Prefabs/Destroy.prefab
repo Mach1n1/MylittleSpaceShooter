@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 9053340267598775236}
   - component: {fileID: 9053340267598775239}
   - component: {fileID: -6200844231393275607}
-  - component: {fileID: -7771100408022309996}
+  - component: {fileID: -3677189253709562569}
   m_Layer: 0
-  m_Name: PlayerDestroy
+  m_Name: Destroy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -203,7 +203,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &-7771100408022309996
+--- !u!114 &-3677189253709562569
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

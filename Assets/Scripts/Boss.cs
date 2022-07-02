@@ -1,49 +1,44 @@
-using UnityEngine.UI;
 using UnityEngine;
 using System;
-public class BossControl : MonoBehaviour
+public class Boss : MonoBehaviour
 {
     [SerializeField] private GameObject ExplosionPrefab;
     [SerializeField] private GameObject LaserPrefab;
     [SerializeField] private GameObject DamagePrefab;
-    private Transform findPlayer;   //поле для поиска игрока
+    private Transform findPlayer;
     private float nextfireEnemy = 0;
-    private int lifeBoss = 20;      //жизни врага
+    private int lifeBoss = 20;
     void Start()
     {
-        //передаем координаты игрока в переменную
         findPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-        //healBar = GetComponent<Image>();
-        //HP = lifeBoss;
     }
     void Update()
     {
-        FireControlBoss();
-        MoveControlBoss();
-        //healBar.fillAmount = HP / lifeBoss;
+        FireBoss();
+        MoveBoss();
     }
-    private void FireControlBoss()
+    private void FireBoss()
     {
-        float fireRate = 1;             //скорость стрельбы
+        float fireRate = 1;
         //если враг напротив игрока, то он стреляет 
         if (Math.Abs(transform.position.x - findPlayer.position.x) < 1)
         {
             if (Time.time > nextfireEnemy)
             {
-                //левый
+                //левый лазер
                 Instantiate(LaserPrefab, transform.position + new Vector3(-2, -0.4f, 0), Quaternion.AngleAxis(30,Vector3.up));
-                //правый
+                //правый лазер
                 Instantiate(LaserPrefab, transform.position + new Vector3(2, -0.4f, 0), Quaternion.identity);
                 nextfireEnemy = Time.time + fireRate;
             }
         }
     }
-    private void MoveControlBoss()
+    private void MoveBoss()
     {
-        float speed = 2;          //скорость движения врага
+        float speed = 2;
         //направляем врага на координаты игрока
         transform.position = Vector3.MoveTowards(transform.position, findPlayer.position, speed * Time.deltaTime);
-        //удерживаем басса на середине
+        //удерживаем босса на середине
         if (transform.position.y < 16)
             transform.Translate(speed * Time.deltaTime * Vector3.up);
     }
@@ -69,13 +64,10 @@ public class BossControl : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             BossDamage();
-            Player playerControls = collision.GetComponent<Player>();
-            //запуск метода вычитания жизни игрока
-            if (playerControls != null) playerControls.PlayerLifs();
+            //вычитание жизни игрока
+            if (collision.TryGetComponent<Player>(out var playerControls)) playerControls.PlayerLifs();
         }
         if (collision.CompareTag("Asteroid"))
-        {
             BossDamage();
-        }
     }
 }

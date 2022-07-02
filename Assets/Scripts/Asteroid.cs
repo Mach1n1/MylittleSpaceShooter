@@ -1,11 +1,11 @@
 using UnityEngine;
-public class AsteroidControl : MonoBehaviour
+public class Asteroid : MonoBehaviour
 {
     [SerializeField] private GameObject ExplosionPrefab;
-    private readonly int speed = 5;     //скорость движения
+    private readonly int speed = 5;
     void Update()
     {
-        transform.Translate(speed * Time.deltaTime * Vector3.down); //вектор
+        transform.Translate(speed * Time.deltaTime * Vector3.down);
         //выход за пределы экрана внизу
         if (transform.position.y < -1.5) Destroy(this.gameObject);
     }
@@ -27,10 +27,8 @@ public class AsteroidControl : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             AsteroidDestroy();
-            //доступ к методу класса Player
-            Player playerControls = collision.GetComponent<Player>();
-            //запуск метода вычитания жизни игрока
-            if (playerControls != null) playerControls.PlayerLifs();
+            //вычитание жизни игрока
+            if (collision.TryGetComponent<Player>(out var playerControls)) playerControls.PlayerLifs();
         }
         if (collision.CompareTag("Enemy")) AsteroidDestroy();
     }

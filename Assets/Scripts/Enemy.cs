@@ -1,26 +1,22 @@
 using UnityEngine;
 using System;
-public class EnemyControl : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
     [SerializeField] private GameObject ExplosionPrefab;
     [SerializeField] private GameObject LaserPrefab;
     [SerializeField] private GameObject DamagePrefab;
-    private Transform findPlayer;   //поле для поиска игрока
+    private Transform findPlayer;
     private float nextfireEnemy = 0;
-    private int lifeEnemy = 2;      //жизни врага
-    private void Start()
-    {
-        //передаем координаты игрока в переменную
-        findPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-    }
+    private int lifeEnemy = 2;
+    private void Start() => findPlayer = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
     void Update()
     {
-        MoveControl();
-        FireControl();
+        MoveEnemy();
+        FireEnemy();
     }
-    private void MoveControl()
+    private void MoveEnemy()
     {
-        float speed = 3f;          //скорость движения врага
+        float speed = 3;
         //направляем врага на координаты игрока
         transform.position = Vector3.MoveTowards(transform.position, findPlayer.position, speed * Time.deltaTime);
         //если враг близок к низу экрана, то он пролетает мимо
@@ -29,42 +25,36 @@ public class EnemyControl : MonoBehaviour
         //выход за пределы экрана внизу
         if (transform.position.y < -1.5) Destroy(this.gameObject);
     }
-    private void FireControl()
+    private void FireEnemy()
     {
-        float fireRate = 1;             //скорость стрельбы
+        float fireRate = 1;
         //если враг напротив игрока, то он стреляет 
         if (Math.Abs(transform.position.x - findPlayer.position.x) < 0.5f)
         {
             if (Time.time > nextfireEnemy)
-             //спавн лазера
             Instantiate(LaserPrefab, transform.position + new Vector3(0, -2, 0), Quaternion.identity);
             nextfireEnemy = Time.time + fireRate;
         }
     }
     private void EnemyDestroy()
     {
-        //удаляем корабль врага при попадании в него лазера
         Destroy(this.gameObject);
-        //анимация взрыва
         Instantiate(ExplosionPrefab, transform.position, Quaternion.identity);
     }
     private void EnemyDamage()
     {
         lifeEnemy--;
-        //анимация урона
         Instantiate(DamagePrefab, transform.position, Quaternion.identity);
+        if (lifeEnemy < 1)
+            EnemyDestroy();
     }
-    private void OnTriggerEnter2D(Collider2D collision) //реакция на столкновения
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Laser"))
         {
             EnemyDamage();
             if (lifeEnemy < 1)
-            {
-                EnemyDestroy();
                 ScoreCounter.score += 100;
-            }
-            //удаляем лазер после попадания
             Destroy(collision.gameObject);
         }
         if (collision.CompareTag("Player"))
@@ -75,10 +65,6 @@ public class EnemyControl : MonoBehaviour
                 playerControls.PlayerLifs();
         }
         if (collision.CompareTag("Asteroid"))
-        {
             EnemyDamage();
-            if (lifeEnemy < 1)
-                EnemyDestroy();
-        }
     }
 }

@@ -5,11 +5,12 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject LaserPrefab;
     [SerializeField] private GameObject DestroyPrefab;
     [SerializeField] private GameObject DamagePrefab;
+
     private Animator animator;
-    private float fireRate = 0.3f;  //скорость стрельбы игрока
+    private float fireRate = 0.3f;
     private float nextfire = 0;
-    private bool isPause;           //флаг паузы    
-    private int lifePlayer = 5;     //счетчик жизней игрока
+    private bool isPause;
+    private int lifePlayer = 5;
     //управление тектом    
     [SerializeField] private Text textLifeCounter;
     [SerializeField] private Text gameover;
@@ -19,41 +20,37 @@ public class Player : MonoBehaviour
     [SerializeField] private Button ButtonRestart;
     void Start()
     {
-        Time.timeScale = 1;
-        //стартовая позиция игрока
-        transform.position = new Vector3(20, 2, 1);
+        Time.timeScale = 1; //не пауза
+        transform.position = new Vector3(20, 2, 1);//стартовая позиция игрока
         animator = GetComponent<Animator>();
     }
     void Update()
     {
-        MoveControlPlayer();
+        MovePlayer();
+        FirePlayer();
+        LifeCounterUI();
         GamePause();
-        NextFirePlayer();
-        LifeCounter();
     }   
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Laser"))//событие столкновения с лазером
+        if (collision.CompareTag("Laser"))
         {
-            //урон игроку
             PlayerLifs();
-            //удаляем лазер после попадания
             Destroy(collision.gameObject);            
         }
     }
-    private void NextFirePlayer()//стрельба
+    private void FirePlayer()
     {
         if (Time.time > nextfire)
         {
-            //спавн лазера           координаты игрока  + 2 клетки вверх
             Instantiate(LaserPrefab, transform.position + new Vector3(0, 2, 0), Quaternion.identity);
             nextfire = fireRate + Time.time;
         }         
     }
-    private void MoveControlPlayer() //управление игроком
+    private void MovePlayer()
     {
-        int speedPlayer = 15; //скорость игрока
-        //передача управления стрелкам и wasd. При нажатии кнопки будет либо +1 -1
+        int speedPlayer = 15;
+        //передача управления стрелкам и wasd
         float horizonInput = Input.GetAxis("Horizontal");             
         float vertInput = Input.GetAxis("Vertical");
         //изменение направления движения по горизонтали
@@ -64,7 +61,7 @@ public class Player : MonoBehaviour
         if (horizonInput > 0) animator.Play("PlayerTurnRight");
         else if(horizonInput < 0) animator.Play("PlayerTurnLeft");
             else animator.Play("PlayerIdle");
-        //ограничение границы перемещения игрока
+        //ограничение границы перемещения игрока на экране
         if (transform.position.y < 1)
             transform.position = new Vector3(transform.position.x, 1, 1);
         if (transform.position.y > 19)
@@ -74,16 +71,14 @@ public class Player : MonoBehaviour
         if (transform.position.x > 35)
             transform.position = new Vector3(1, transform.position.y, 1);
     }
-    public void PlayerLifs()//смерть игрока
+    public void PlayerLifs()
     {
         //анимация урона
         Instantiate(DamagePrefab, transform.position, Quaternion.identity);
         lifePlayer--;
-        if (lifePlayer < 1)
+        if (lifePlayer < 1) //смерть
         {
-            //анимация взрыва игрока
             Instantiate(DestroyPrefab, transform.position, Quaternion.identity);
-            //удаление игрока
             Destroy(this.gameObject);
             //активация текста и кнопок
             gameover.gameObject.SetActive(true);
@@ -91,37 +86,18 @@ public class Player : MonoBehaviour
             ButtonRestart.gameObject.SetActive(true);
         }
     }
-    private void GamePause()//пауза
+    private void GamePause()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             isPause = !isPause;
             Time.timeScale = isPause ? 0 : 1;
+            //активация текста и кнопок
             pause.gameObject.SetActive(isPause);
             ButtonOut.gameObject.SetActive(isPause);
             ButtonRestart.gameObject.SetActive(isPause);
         }
     }    
-    public void LifeCounter()//счетчик жизней игрока на экране
-    {
+    public void LifeCounterUI() =>
         textLifeCounter.text = "player life: " + lifePlayer;
-    }
-    /*private void LoadScorePlayer()
-    {
-        if (PlayerPrefs.HasKey("PlayerScoreSafe"))
-        {
-            scorePlayer = PlayerPrefs.GetInt("PlayerScoreSafe", scorePlayer);
-        }
-        else textScore.text = "Error loading";
-    }
-    private void SafeScorePlayer()
-    {
-        PlayerPrefs.SetInt("PlayerScoreSafe", scorePlayer);
-        PlayerPrefs.Save();
-    }
-    private void DeleteScorePlayer()
-    {
-        scorePlayer = 0;
-        PlayerPrefs.DeleteKey("X");
-    }*/
 }
